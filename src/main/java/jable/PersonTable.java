@@ -1,5 +1,7 @@
 package jable;
 
+import com.google.common.collect.Sets;
+
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -9,30 +11,29 @@ import java.util.*;
  */
 public class PersonTable {
 
-    private Map<String, Set<Person>> lastNameToPerson = new HashMap<String, Set<Person>>();
-    private Map<Integer, Set<Person>> ageToPerson = new HashMap<Integer, Set<Person>>();
+    private Map<Field, Map<Object, Set<Person>>> indexes;
+
+    public PersonTable() throws NoSuchFieldException {
+        indexes = new HashMap<Field, Map<Object, Set<Person>>>();
+        indexes.put(Person.class.getField("lastName"), new HashMap<Object, Set<Person>>());
+        indexes.put(Person.class.getField("age"), new HashMap<Object, Set<Person>>());
+    }
 
     public void add(Person person) throws NoSuchFieldException, IllegalAccessException {
         index(person, person.getClass().getField("lastName"));
-
-        Set<Person> peopleWithSameAge = ageToPerson.get(person.age);
-        peopleWithSameAge = peopleWithSameAge != null ? peopleWithSameAge : new HashSet<Person>();
-        peopleWithSameAge.add(person);
-        ageToPerson.put(person.age, peopleWithSameAge);
+        index(person, person.getClass().getField("age"));
     }
 
-    private void index(Person person, Field idx) throws IllegalAccessException {
-        Set<Person> peopleWithSameLastName = lastNameToPerson.get(idx.get(person));
-        peopleWithSameLastName = peopleWithSameLastName != null ? peopleWithSameLastName : new HashSet<Person>();
-        peopleWithSameLastName.add(person);
-        lastNameToPerson.put((String) idx.get(person), peopleWithSameLastName);
+    private void index(Person person, Field field) throws IllegalAccessException, NoSuchFieldException {
+        Set<Person> indexedMap = indexes.get(field).get(field.get(person));
+        indexedMap = indexedMap != null ? indexedMap : new HashSet<Person>();
+        indexedMap.add(person);
+        indexes.get(field).put(field.get(person), indexedMap);
     }
 
-    public Set<Person> getByLastName(String lastName) {
-        return lastNameToPerson.get(lastName);
+
+    public Set<Person> getByIndex(Field field, Object value) throws NoSuchFieldException {
+        return indexes.get(field).get(value);
     }
 
-    public Set<Person> getByAge(Integer age) {
-        return ageToPerson.get(age);
-    }
 }

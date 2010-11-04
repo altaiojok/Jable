@@ -22,13 +22,13 @@ public class JableTest extends TestCase {
         t.add(rdb);
         t.add(jml);
 
-        assertEquals(Sets.newHashSet(rdb, elb), t.getByLastName(rdb.lastName));
-        assertEquals(Sets.newHashSet(rdb, elb), t.getByLastName(elb.lastName));
-        assertEquals(Sets.newHashSet(jml), t.getByLastName(jml.lastName));
-        
-        assertEquals(Sets.newHashSet(rdb), t.getByAge(rdb.age));
-        assertEquals(Sets.newHashSet(jml, elb), t.getByAge(elb.age));
-        assertEquals(Sets.newHashSet(jml, elb), t.getByAge(jml.age));
+        assertEquals(Sets.newHashSet(rdb, elb), t.getByIndex(Person.class.getField("lastName"), rdb.lastName));
+        assertEquals(Sets.newHashSet(rdb, elb), t.getByIndex(Person.class.getField("lastName"), elb.lastName));
+        assertEquals(Sets.newHashSet(jml), t.getByIndex(Person.class.getField("lastName"), jml.lastName));
+
+        assertEquals(Sets.newHashSet(rdb), t.getByIndex(Person.class.getField("age"), rdb.age));
+        assertEquals(Sets.newHashSet(jml, elb), t.getByIndex(Person.class.getField("age"), elb.age));
+        assertEquals(Sets.newHashSet(jml, elb), t.getByIndex(Person.class.getField("age"), jml.age));
     }
 
 
