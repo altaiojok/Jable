@@ -5,9 +5,9 @@ package jable;
  * @since 2010-11-03
  */
 public final class Person {
-    public final String lastName;
+    @Indexed public final String lastName;
     public final String firstName ;
-    public final Integer age;
+    @Indexed public final Integer age;
 
 
     Person(String lastName, String firstName, Integer age) {

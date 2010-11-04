@@ -15,8 +15,12 @@ public class PersonTable {
 
     public PersonTable() throws NoSuchFieldException {
         indexes = new HashMap<Field, Map<Object, Set<Person>>>();
-        indexes.put(Person.class.getField("lastName"), new HashMap<Object, Set<Person>>());
-        indexes.put(Person.class.getField("age"), new HashMap<Object, Set<Person>>());
+
+        for (Field f : Person.class.getFields()) {
+            if (f.getAnnotation(Indexed.class) != null) {
+                indexes.put(Person.class.getField(f.getName()), new HashMap<Object, Set<Person>>());
+            }
+        }
     }
 
     public void add(Person person) throws NoSuchFieldException, IllegalAccessException {
@@ -31,9 +35,11 @@ public class PersonTable {
         indexes.get(field).put(field.get(person), indexedMap);
     }
 
-
     public Set<Person> getByIndex(Field field, Object value) throws NoSuchFieldException {
         return indexes.get(field).get(value);
     }
 
+    Map<Field, Map<Object, Set<Person>>> getIndexes() {
+        return indexes;
+    }
 }

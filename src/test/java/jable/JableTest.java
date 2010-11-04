@@ -4,6 +4,10 @@ import com.google.common.collect.Sets;
 import junit.framework.TestCase;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Ryan Brainard
  * @since 2010-11-03
@@ -13,6 +17,19 @@ public class JableTest extends TestCase {
     final Person rdb = new Person("Brainard", "Ryan", 28);
     final Person elb = new Person("Brainard", "Erin", 31);
     final Person jml = new Person("Lee", "Joomi", 31);
+
+    @Test
+    public void testIndexAnnotation() throws Exception {
+        Set<String> fieldIndexes = Sets.newHashSet();
+
+        for(Field f : new PersonTable().getIndexes().keySet()) {
+            fieldIndexes.add(f.getName());
+        }
+
+        assertTrue(fieldIndexes.contains("lastName"));
+        assertFalse(fieldIndexes.contains("firstName"));
+        assertTrue(fieldIndexes.contains("age"));
+    }
 
     @Test
     public void testGettingCollections() throws Exception {
