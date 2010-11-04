@@ -9,6 +9,7 @@ import java.util.Collection;
  * @since 2010-11-04
  */
 public interface IndexedTable<E> {
+
     boolean add(E e);
 
     boolean addAll(Collection<? extends E> c);

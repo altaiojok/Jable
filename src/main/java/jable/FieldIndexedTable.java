@@ -14,8 +14,8 @@ import java.util.Map;
  */
 public class FieldIndexedTable<E> implements IndexedTable<E> {
 
-    private Class<E> clazz;
-    private Map<Field, Map<Object, Collection<E>>> indexes;
+    private final Class<E> clazz;
+    private final Map<Field, Map<Object, Collection<E>>> indexes;
 
     public FieldIndexedTable(Class<E> clazz) {
         this.clazz = clazz;
@@ -30,11 +30,11 @@ public class FieldIndexedTable<E> implements IndexedTable<E> {
     }
 
     public boolean add(E e) {
-        boolean collectionChanged = false;
+        boolean hasChanged = false;
 
         for(Field indexBy : indexes.keySet()) {
-            Map<Object, Collection<E>> index = indexes.get(indexBy);
-            Object indexedFieldValue = null;
+            final Map<Object, Collection<E>> index = indexes.get(indexBy);
+            final Object indexedFieldValue;
             try {
                 indexedFieldValue = indexBy.get(e);
             } catch (IllegalAccessException iae) {
@@ -42,25 +42,25 @@ public class FieldIndexedTable<E> implements IndexedTable<E> {
             }
             Collection<E> indexedMap = index.get(indexedFieldValue);
             indexedMap = indexedMap != null ? indexedMap : new HashSet<E>();
-            collectionChanged |= indexedMap.add(e);
+            hasChanged |= indexedMap.add(e);
             index.put(indexedFieldValue, indexedMap);
         }
 
-        return collectionChanged;
+        return hasChanged;
     }
 
     public boolean addAll(Collection<? extends E> c) {
-        boolean collectionChanged = true;
+        boolean hasChanged = false;
 
         for (E e : c) {
-            collectionChanged |= add(e);
+            hasChanged |= add(e);
         }
 
-        return collectionChanged;
+        return hasChanged;
     }
 
     public Collection<E> getByIndex(String indexName, Object value) {
-        Field fieldIndex = null;
+        final Field fieldIndex;
         try {
             fieldIndex = clazz.getField(indexName);
         } catch (NoSuchFieldException e) {

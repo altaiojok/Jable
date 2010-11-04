@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -13,14 +15,14 @@ import java.util.Set;
  */
 public class FieldIndexedTableTest extends TestCase {
 
-    final IndexedTable<Person> table;
+    final IndexedTable<Person> personTable;
 
     final Person rdb = new Person("Brainard", "Ryan",  28);
     final Person elb = new Person("Brainard", "Erin",  31);
     final Person jml = new Person("Lee",      "Joomi", 31);
 
     public FieldIndexedTableTest() throws Exception {
-        table = new FieldIndexedTable<Person>(Person.class);
+        personTable = new FieldIndexedTable<Person>(Person.class);
     }
 
     @Test
@@ -38,23 +40,37 @@ public class FieldIndexedTableTest extends TestCase {
 
     @Test
     public void testGettingCollections() throws Exception {
-        table.add(elb);
-        table.add(rdb);
-        table.add(jml);
+        personTable.add(elb);
+        personTable.add(rdb);
+        personTable.add(jml);
 
-        assertEquals(Sets.newHashSet(rdb, elb), table.getByIndex("lastName", rdb.lastName));
-        assertEquals(Sets.newHashSet(rdb, elb), table.getByIndex("lastName", elb.lastName));
-        assertEquals(Sets.newHashSet(jml),      table.getByIndex("lastName", jml.lastName));
+        assertEquals(Sets.newHashSet(rdb, elb), personTable.getByIndex("lastName", rdb.lastName));
+        assertEquals(Sets.newHashSet(rdb, elb), personTable.getByIndex("lastName", elb.lastName));
+        assertEquals(Sets.newHashSet(jml),      personTable.getByIndex("lastName", jml.lastName));
 
-        assertEquals(Sets.newHashSet(rdb),      table.getByIndex("age", rdb.age));
-        assertEquals(Sets.newHashSet(jml, elb), table.getByIndex("age", elb.age));
-        assertEquals(Sets.newHashSet(jml, elb), table.getByIndex("age", jml.age));
+        assertEquals(Sets.newHashSet(rdb),      personTable.getByIndex("age", rdb.age));
+        assertEquals(Sets.newHashSet(jml, elb), personTable.getByIndex("age", elb.age));
+        assertEquals(Sets.newHashSet(jml, elb), personTable.getByIndex("age", jml.age));
+    }
+
+    @Test
+    public void testAdd() throws Exception {
+        assertTrue(personTable.add(rdb));
+        assertTrue(personTable.add(elb));
+        assertFalse(personTable.add(elb));
+    }
+
+    @Test
+    public void testAddAll() throws Exception {
+        assertTrue(personTable.addAll(Sets.newHashSet(elb)));
+        assertTrue(personTable.addAll(Sets.newHashSet(elb, rdb, jml)));
+        assertFalse(personTable.addAll(Sets.newHashSet(elb, rdb, jml)));
     }
 
     @Test
     public void testGettingCollectionsForNonExistentColumn() throws Exception {
         try {
-            table.getByIndex("birthday", "");
+            personTable.getByIndex("birthday", "");
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals(NoSuchFieldException.class, e.getCause().getClass());
@@ -64,7 +80,7 @@ public class FieldIndexedTableTest extends TestCase {
     @Test
     public void testGettingCollectionsForNonIndexedField() throws Exception {
         try {
-            table.getByIndex("firstName", "");
+            personTable.getByIndex("firstName", "");
             fail();
         } catch (NullPointerException npe) {
             assertEquals("No index found for firstName. Be sure to annotate field as @Indexed.", npe.getMessage());
