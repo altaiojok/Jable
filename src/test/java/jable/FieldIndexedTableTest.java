@@ -5,8 +5,6 @@ import junit.framework.TestCase;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
