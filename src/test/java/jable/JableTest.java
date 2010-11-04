@@ -15,7 +15,7 @@ public class JableTest extends TestCase {
     final Person jml = new Person("Lee", "Joomi", 31);
 
     @Test
-    public void testGettingCollections() {
+    public void testGettingCollections() throws Exception {
     PersonTable t = new PersonTable();
 
         t.add(elb);
