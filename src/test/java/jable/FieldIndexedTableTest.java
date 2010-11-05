@@ -44,9 +44,9 @@ public class FieldIndexedTableTest extends TestCase {
 
         assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("lastName", JS.lastName));
         assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("lastName", AB.lastName));
-        assertEquals(Sets.newHashSet(MB),      personTable.getByIndex("lastName", MB.lastName));
+        assertEquals(Sets.newHashSet(MB),     personTable.getByIndex("lastName", MB.lastName));
 
-        assertEquals(Sets.newHashSet(JS),      personTable.getByIndex("age", JS.age));
+        assertEquals(Sets.newHashSet(JS),     personTable.getByIndex("age", JS.age));
         assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("age", AB.age));
         assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("age", MB.age));
     }
