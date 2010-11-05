@@ -15,9 +15,9 @@ public class FieldIndexedTableTest extends TestCase {
 
     final IndexedTable<Person> personTable;
 
-    final Person rdb = new Person("Brainard", "Ryan",  28);
-    final Person elb = new Person("Brainard", "Erin",  31);
-    final Person jml = new Person("Lee",      "Joomi", 31);
+    final Person JS = new Person("Smith", "Joanna", 28);
+    final Person AB = new Person("Smith", "Angela", 31);
+    final Person MB = new Person("Black", "Mary",   31);
 
     public FieldIndexedTableTest() throws Exception {
         personTable = new FieldIndexedTable<Person>(Person.class);
@@ -38,31 +38,30 @@ public class FieldIndexedTableTest extends TestCase {
 
     @Test
     public void testGettingCollections() throws Exception {
-        personTable.add(elb);
-        personTable.add(rdb);
-        personTable.add(jml);
+        personTable.add(AB);
+        personTable.add(JS);
+        personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(rdb, elb), personTable.getByIndex("lastName", rdb.lastName));
-        assertEquals(Sets.newHashSet(rdb, elb), personTable.getByIndex("lastName", elb.lastName));
-        assertEquals(Sets.newHashSet(jml),      personTable.getByIndex("lastName", jml.lastName));
+        assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("lastName", JS.lastName));
+        assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("lastName", AB.lastName));
+        assertEquals(Sets.newHashSet(MB),      personTable.getByIndex("lastName", MB.lastName));
 
-        assertEquals(Sets.newHashSet(rdb),      personTable.getByIndex("age", rdb.age));
-        assertEquals(Sets.newHashSet(jml, elb), personTable.getByIndex("age", elb.age));
-        assertEquals(Sets.newHashSet(jml, elb), personTable.getByIndex("age", jml.age));
+        assertEquals(Sets.newHashSet(JS),      personTable.getByIndex("age", JS.age));
+        assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("age", AB.age));
+        assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("age", MB.age));
     }
 
     @Test
     public void testAdd() throws Exception {
-        assertTrue(personTable.add(rdb));
-        assertTrue(personTable.add(elb));
-        assertFalse(personTable.add(elb));
+        assertTrue(personTable.add(JS));
+        assertTrue(personTable.add(AB));
+        assertFalse(personTable.add(AB));
     }
 
     @Test
     public void testAddAll() throws Exception {
-        assertTrue(personTable.addAll(Sets.newHashSet(elb)));
-        assertTrue(personTable.addAll(Sets.newHashSet(elb, rdb, jml)));
-        assertFalse(personTable.addAll(Sets.newHashSet(elb, rdb, jml)));
+        assertTrue(personTable.addAll(Sets.newHashSet(AB, JS, MB)));
+        assertFalse(personTable.addAll(Sets.newHashSet(AB, JS, MB)));
     }
 
     @Test
