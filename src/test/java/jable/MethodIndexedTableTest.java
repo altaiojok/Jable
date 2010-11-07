@@ -60,8 +60,8 @@ public class MethodIndexedTableTest extends TestCase {
         try {
             privatePersonTable.getByIndex("birthday", "");
             fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals(NoSuchMethodException.class, e.getCause().getClass());
+        } catch (NullPointerException npe) {
+            assertEquals("No index found for birthday. Be sure to annotate method as @Indexed.", npe.getMessage());
         }
     }
 

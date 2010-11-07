@@ -4,9 +4,6 @@ import com.google.common.collect.Sets;
 import junit.framework.TestCase;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
 /**
  * @author Ryan Brainard
  * @since 2010-11-03
@@ -63,8 +60,8 @@ public class FieldIndexedTableTest extends TestCase {
         try {
             personTable.getByIndex("birthday", "");
             fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals(NoSuchFieldException.class, e.getCause().getClass());
+        } catch (NullPointerException npe) {
+            assertEquals("No index found for birthday. Be sure to annotate field as @Indexed.", npe.getMessage());
         }
     }
 
