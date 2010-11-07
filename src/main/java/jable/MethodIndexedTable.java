@@ -20,7 +20,7 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
     Collection<IndexDefinition> findIndexedDefinitions() {
         final Collection<IndexDefinition> indexedMethods = Sets.newHashSet();
 
-        for (Method method : clazz.getMethods()) {
+        for (final Method method : clazz.getMethods()) {
             if (method.getAnnotation(Indexed.class) != null) {
                 if (method.getParameterTypes().length != 0) {
                     throw new IllegalArgumentException("Methods with parameters cannot be indexed.");
@@ -30,24 +30,21 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
                     throw new IllegalArgumentException("Methods without return values cannot be indexed");
                 }
 
-                indexedMethods.add(new IndexDefinition(method.getName(),
-                                                       method.getAnnotation(Indexed.class).isUnique(),
-                                                       ElementType.METHOD));
+                indexedMethods.add(new IndexDefinition<E>(method.getName(), method.getAnnotation(Indexed.class).isUnique()) {
+                    @Override
+                    public Object getIndexableValue(E e) {
+                        try {
+                            return method.invoke(e);
+                        } catch (IllegalAccessException ex) {
+                            throw new RuntimeException(ex);
+                        } catch (InvocationTargetException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
             }
         }
 
         return indexedMethods;
-    }
-
-    Object getIndexableValue(E e, String indexBy) {
-        try {
-            return clazz.getMethod(indexBy).invoke(e);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

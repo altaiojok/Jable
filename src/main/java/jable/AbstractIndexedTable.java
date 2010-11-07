@@ -38,7 +38,7 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
 
         for(Map.Entry<IndexDefinition, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
             final IndexDefinition indexDef = indexEntry.getKey();
-            final Object indexableValue = getIndexableValue(e, indexDef.getName());
+            final Object indexableValue = indexDef.getIndexableValue(e);
 
             Collection<E> indexedElements = indexEntry.getValue().get(indexableValue);
             if (indexedElements == null) {
@@ -55,8 +55,6 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
 
         return hasChanged;
     }
-
-    abstract Object getIndexableValue(E e, String indexBy);
 
     public boolean addAll(Collection<? extends E> c) {
         boolean hasChanged = false;

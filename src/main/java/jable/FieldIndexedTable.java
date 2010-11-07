@@ -16,27 +16,24 @@ public class FieldIndexedTable<E> extends AbstractIndexedTable<E> {
         super(ElementType.FIELD, clazz);
     }
 
-     Collection<IndexDefinition> findIndexedDefinitions() {
+    Collection<IndexDefinition> findIndexedDefinitions() {
         final Collection<IndexDefinition> indexedFields = Sets.newHashSet();
 
-         for (Field field : clazz.getFields()) {
+        for (final Field field : clazz.getFields()) {
             if (field.getAnnotation(Indexed.class) != null) {
-                indexedFields.add(new IndexDefinition(field.getName(),
-                                                      field.getAnnotation(Indexed.class).isUnique(),
-                                                      ElementType.FIELD));
+                indexedFields.add(new IndexDefinition<E>(field.getName(), field.getAnnotation(Indexed.class).isUnique()) {
+                    @Override
+                    public Object getIndexableValue(E e) {
+                        try {
+                            return field.get(e);
+                        } catch (IllegalAccessException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
             }
         }
 
         return indexedFields;
-    }
-
-    Object getIndexableValue(E e, String indexBy) {
-        try {
-            return clazz.getField(indexBy).get(e);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchFieldException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }
