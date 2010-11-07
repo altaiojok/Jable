@@ -5,8 +5,6 @@ import com.google.common.collect.Sets;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * @author Ryan Brainard
@@ -30,26 +28,13 @@ public class FieldIndexedTable<E> extends AbstractIndexedTable<E> {
         return indexedFields;
     }
 
-    public boolean add(E e) {
-        boolean hasChanged = false;
-
-        for(String indexBy : indexes.keySet()) {
-            final Map<Object, Collection<E>> index = indexes.get(indexBy);
-            final Object indexedFieldValue;
-            try {
-                indexedFieldValue = clazz.getField(indexBy).get(e);
-            } catch (IllegalAccessException iae) {
-                throw new RuntimeException(iae);
-            } catch (NoSuchFieldException nsfe) {
-                throw new RuntimeException(nsfe);
-            }
-            Collection<E> indexedMap = index.get(indexedFieldValue);
-            indexedMap = indexedMap != null ? indexedMap : new HashSet<E>();
-            hasChanged |= indexedMap.add(e);
-            index.put(indexedFieldValue, indexedMap);
+    Object getIndexedValue(E e, String indexBy) {
+        try {
+            return clazz.getField(indexBy).get(e);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (NoSuchFieldException ex) {
+            throw new RuntimeException(ex);
         }
-
-        return hasChanged;
     }
-
 }

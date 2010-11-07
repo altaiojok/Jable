@@ -6,8 +6,6 @@ import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * @author Ryan Brainard
@@ -39,27 +37,15 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
         return indexedMethods;
     }
 
-    public boolean add(E e) {
-        boolean hasChanged = false;
-
-        for(String indexBy : indexes.keySet()) {
-            final Map<Object, Collection<E>> index = indexes.get(indexBy);
-            final Object indexedMethodValue;
-            try {
-                indexedMethodValue = clazz.getMethod(indexBy).invoke(e);
-            } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            } catch (NoSuchMethodException ex) {
-                throw new RuntimeException(ex);
-            }
-            Collection<E> indexedMap = index.get(indexedMethodValue);
-            indexedMap = indexedMap != null ? indexedMap : new HashSet<E>();
-            hasChanged |= indexedMap.add(e);
-            index.put(indexedMethodValue, indexedMap);
+    Object getIndexedValue(E e, String indexBy) {
+        try {
+            return clazz.getMethod(indexBy).invoke(e);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
         }
-
-        return hasChanged;
     }
 }
