@@ -60,7 +60,7 @@ public class FieldIndexedTableTest extends IndexedTableBaseTest {
             personTable.getByIndex("birthday", "");
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("No index found for birthday. Be sure to annotate field as @Indexed.", npe.getMessage());
+            assertEquals("No index found for birthday.", npe.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class FieldIndexedTableTest extends IndexedTableBaseTest {
             personTable.getByIndex("firstName", "");
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("No index found for firstName. Be sure to annotate field as @Indexed.", npe.getMessage());
+            assertEquals("No index found for firstName.", npe.getMessage());
         }
     }
 

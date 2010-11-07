@@ -59,7 +59,7 @@ public class MethodIndexedTableTest extends IndexedTableBaseTest {
             personTable.getByIndex("getBirthday", "");
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("No index found for getBirthday. Be sure to annotate method as @Indexed.", npe.getMessage());
+            assertEquals("No index found for getBirthday.", npe.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public class MethodIndexedTableTest extends IndexedTableBaseTest {
             personTable.getByIndex("getFirstName", "");
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("No index found for getFirstName. Be sure to annotate method as @Indexed.", npe.getMessage());
+            assertEquals("No index found for getFirstName.", npe.getMessage());
         }
     }
 

@@ -17,10 +17,8 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
     protected final Class<E> clazz;
     private final Map<String, IndexDefinition> indexDefinitionsByName;
     private final Map<IndexDefinition, Map<Object, Collection<E>>> indexes;
-    private final ElementType indexType;
 
     AbstractIndexedTable(ElementType indexType, Class<E> clazz) {
-        this.indexType = indexType;
         this.clazz = clazz;
         this.indexes = Maps.newHashMap();
         this.indexDefinitionsByName = Maps.newHashMap();
@@ -66,11 +64,9 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
         return hasChanged;
     }
 
-    public Collection<E> getByIndex(String indexName, Object value) {
+    public Collection<E> getByIndex(String indexName, Object whereValueIs) {
         return Preconditions.checkNotNull(indexes.get(indexDefinitionsByName.get(indexName)),
-                "No index found for " + indexName +
-                ". Be sure to annotate " + indexType.name().toLowerCase() +
-                " as @Indexed.").get(value);
+                                          "No index found for " + indexName + ".").get(whereValueIs);
     }
 
     public Collection<String> getIndexNames() {
