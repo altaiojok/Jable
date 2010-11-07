@@ -23,6 +23,10 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
         this.indexDefinitionsByName = Maps.newHashMap();
 
         for (IndexDefinition<E> indexDef : buildIndexDefinitions()) {
+            if (indexDefinitionsByName.get(indexDef.getName()) != null) {
+                throw new UniqueConstraintViolation(IndexDefinition.class.getSimpleName(), indexDef.getName());
+            }
+
             indexDefinitionsByName.put(indexDef.getName(), indexDef);
             indexes.put(indexDef, new HashMap<Object, Collection<E>>());
         }
@@ -63,9 +67,14 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
         return hasChanged;
     }
 
-    public Collection<E> getByIndex(String indexName, Object whereValueIs) {
-        return Preconditions.checkNotNull(indexes.get(indexDefinitionsByName.get(indexName)),
-                                          "No index found for " + indexName + ".").get(whereValueIs);
+    public Collection<E> getBy(String indexName, Object whereValueIs) {
+        return getBy(Preconditions.checkNotNull(indexDefinitionsByName.get(indexName),
+                "No index found for " + indexName + "."), whereValueIs);
+    }
+
+    public Collection<E> getBy(IndexDefinition indexDef, Object whereValueIs) {
+        return Preconditions.checkNotNull(indexes.get(indexDef),
+                "No index found for " + indexDef.getName() + ".").get(whereValueIs);
     }
 
     public Collection<String> getIndexNames() {

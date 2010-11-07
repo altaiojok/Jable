@@ -1,6 +1,7 @@
 package jable;
 
-import org.testng.annotations.BeforeTest;
+import com.google.common.collect.Sets;
+
 
 /**
  * @author Ryan Brainard
@@ -9,7 +10,6 @@ import org.testng.annotations.BeforeTest;
 public class MethodIndexedTableTest extends IndexedTableBaseTest {
 
     @Override
-    @BeforeTest
     protected void setUp() throws Exception {
         super.setUp();
         personTable = new MethodIndexedTable<Person>(Person.class);
@@ -19,5 +19,12 @@ public class MethodIndexedTableTest extends IndexedTableBaseTest {
         assertTrue(personTable.getIndexNames().contains("getLastName"));
         assertFalse(personTable.getIndexNames().contains("getFirstName"));
         assertTrue(personTable.getIndexNames().contains("getAge"));
+    }
+
+    public void testGetByAnnotatedMethodIndexName() throws Exception {
+        personTable.add(JS);
+        personTable.add(AS);
+
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy("getLastName", JS.getLastName()));
     }
 }

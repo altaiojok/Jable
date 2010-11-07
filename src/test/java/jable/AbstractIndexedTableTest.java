@@ -1,7 +1,8 @@
 package jable;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.inject.internal.Preconditions;
 
 import java.util.Collection;
 
@@ -54,6 +55,19 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         assertEquals(INDEX_DEFINITIONS_NAMES, personTable.getIndexNames());
     }
 
+    public void testInitializingDuplicateIndex() throws Exception {
+        try {
+            new AbstractIndexedTable<Person>(Person.class) {
+                @Override
+                Collection<IndexDefinition<Person>> buildIndexDefinitions() {
+                    return Lists.newArrayList(NON_UNIQUE_INDEX, UNIQUE_INDEX, UNIQUE_INDEX);
+                }
+            };
+        } catch (UniqueConstraintViolation ucv) {
+            assertEquals("Record already exists with " + IndexDefinition.class.getSimpleName() + " as " + UNIQUE_INDEX.getName(), ucv.getMessage());
+        }
+    }
+
     public void testAdd() throws Exception {
         assertTrue(personTable.add(JS));
         assertTrue(personTable.add(AS));
@@ -71,16 +85,27 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(JS);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(JS)));
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(AS)));
-        assertEquals(Sets.newHashSet(MB),     personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(JS)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(AS)));
+        assertEquals(Sets.newHashSet(MB),     personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+    }
+
+
+    public void testGetByIndexDefinition() throws Exception {
+        personTable.add(AS);
+        personTable.add(JS);
+        personTable.add(MB);
+
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(JS)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(AS)));
+        assertEquals(Sets.newHashSet(MB),     personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
     public void testGetByIndexNameForMissingIndex() throws Exception {
         final String missingIndex = "NotHere";
 
         try {
-            personTable.getByIndex(missingIndex, "");
+            personTable.getBy(missingIndex, "");
             fail();
         } catch (NullPointerException npe) {
             assertEquals("No index found for " + missingIndex + ".", npe.getMessage());
@@ -91,7 +116,7 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(MB);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(MB), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(MB), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
     public void testAddDifferentRecordWithDuplicateOnUniqueIndex() throws Exception {
