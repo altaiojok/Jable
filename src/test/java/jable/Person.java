@@ -8,12 +8,33 @@ public final class Person {
     @Indexed public final String lastName;
     public final String firstName ;
     @Indexed public final Integer age;
+    @Indexed(isUnique = true) public final Integer ssn;
 
 
-    Person(String lastName, String firstName, Integer age) {
+    Person(String lastName, String firstName, Integer age, Integer ssn) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.age = age;
+        this.ssn = ssn;
+    }
+
+    @Indexed
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    @Indexed
+    public Integer getAge() {
+        return age;
+    }
+
+    @Indexed(isUnique = true)
+    public Integer getSsn() {
+        return ssn;
     }
 
     @Override

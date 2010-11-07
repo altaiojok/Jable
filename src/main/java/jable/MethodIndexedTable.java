@@ -17,8 +17,8 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
         super(ElementType.METHOD, clazz);
     }
 
-    Collection<String> findIndexedMembers() {
-        final Collection<String> indexedMethods = Sets.newHashSet();
+    Collection<IndexDefinition> findIndexedDefinitions() {
+        final Collection<IndexDefinition> indexedMethods = Sets.newHashSet();
 
         for (Method method : clazz.getMethods()) {
             if (method.getAnnotation(Indexed.class) != null) {
@@ -30,14 +30,16 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
                     throw new IllegalArgumentException("Methods without return values cannot be indexed");
                 }
 
-                indexedMethods.add(method.getName());
+                indexedMethods.add(new IndexDefinition(method.getName(),
+                                                       method.getAnnotation(Indexed.class).isUnique(),
+                                                       ElementType.METHOD));
             }
         }
 
         return indexedMethods;
     }
 
-    Object getIndexedValue(E e, String indexBy) {
+    Object getIndexableValue(E e, String indexBy) {
         try {
             return clazz.getMethod(indexBy).invoke(e);
         } catch (InvocationTargetException ex) {

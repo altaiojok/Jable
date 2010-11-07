@@ -1,11 +1,12 @@
 package jable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -14,36 +15,48 @@ import java.util.Map;
  */
 abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
     protected final Class<E> clazz;
-    private final Map<String, Map<Object, Collection<E>>> indexes;
+    private final Map<String, IndexDefinition> indexDefinitionsByName;
+    private final Map<IndexDefinition, Map<Object, Collection<E>>> indexes;
     private final ElementType indexType;
 
     AbstractIndexedTable(ElementType indexType, Class<E> clazz) {
         this.indexType = indexType;
         this.clazz = clazz;
-        this.indexes = new HashMap<String, Map<Object, Collection<E>>>();
+        this.indexes = Maps.newHashMap();
+        this.indexDefinitionsByName = Maps.newHashMap();
 
-        for (String indexName : findIndexedMembers()) {
-            indexes.put(indexName, new HashMap<Object, Collection<E>>());
+        for (IndexDefinition indexDef : findIndexedDefinitions()) {
+            indexDefinitionsByName.put(indexDef.getName(), indexDef);
+            indexes.put(indexDef, new HashMap<Object, Collection<E>>());
         }
     }
 
-    abstract Collection<String> findIndexedMembers();
+    abstract Collection<IndexDefinition> findIndexedDefinitions();
 
     public boolean add(E e) {
         boolean hasChanged = false;
 
-        for(Map.Entry<String, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
-            final Object indexedValue = getIndexedValue(e, indexEntry.getKey());
-            Collection<E> indexedMap = indexEntry.getValue().get(indexedValue);
-            indexedMap = indexedMap != null ? indexedMap : new HashSet<E>();
-            hasChanged |= indexedMap.add(e);
-            indexEntry.getValue().put(indexedValue, indexedMap);
+        for(Map.Entry<IndexDefinition, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
+            final IndexDefinition indexDef = indexEntry.getKey();
+            final Object indexableValue = getIndexableValue(e, indexDef.getName());
+
+            Collection<E> indexedElements = indexEntry.getValue().get(indexableValue);
+            if (indexedElements == null) {
+                indexedElements = Sets.newHashSet();
+            } else if (indexDef.isUnique()
+                       && !indexedElements.contains(e)
+                       && indexEntry.getValue().containsKey(indexableValue)) {
+                throw new UniqueConstraintViolation(indexDef.getName(), indexableValue.toString());
+            }
+
+            hasChanged |= indexedElements.add(e);
+            indexEntry.getValue().put(indexableValue, indexedElements);
         }
 
         return hasChanged;
     }
 
-    abstract Object getIndexedValue(E e, String indexBy);
+    abstract Object getIndexableValue(E e, String indexBy);
 
     public boolean addAll(Collection<? extends E> c) {
         boolean hasChanged = false;
@@ -56,13 +69,19 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
     }
 
     public Collection<E> getByIndex(String indexName, Object value) {
-        return Preconditions.checkNotNull(indexes.get(indexName),
+        return Preconditions.checkNotNull(indexes.get(indexDefinitionsByName.get(indexName)),
                 "No index found for " + indexName +
                 ". Be sure to annotate " + indexType.name().toLowerCase() +
                 " as @Indexed.").get(value);
     }
 
     public Collection<String> getIndexNames() {
-        return indexes.keySet();
+        Collection<String> indexNames = Sets.newHashSet();
+
+        for (IndexDefinition indexDef : indexes.keySet()) {
+            indexNames.add(indexDef.getName());
+        }
+
+        return indexNames;
     }
 }
