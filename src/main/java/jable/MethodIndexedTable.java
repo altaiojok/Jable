@@ -2,7 +2,6 @@ package jable;
 
 import com.google.common.collect.Sets;
 
-import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -14,11 +13,11 @@ import java.util.Collection;
 public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
 
     public MethodIndexedTable(Class<E> clazz) {
-        super(ElementType.METHOD, clazz);
+        super(clazz);
     }
 
-    Collection<IndexDefinition> findIndexedDefinitions() {
-        final Collection<IndexDefinition> indexedMethods = Sets.newHashSet();
+    Collection<IndexDefinition<E>> findIndexDefinitions() {
+        final Collection<IndexDefinition<E>> indexedMethods = Sets.newHashSet();
 
         for (final Method method : clazz.getMethods()) {
             if (method.getAnnotation(Indexed.class) != null) {

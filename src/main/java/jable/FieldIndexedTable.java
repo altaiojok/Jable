@@ -2,7 +2,6 @@ package jable;
 
 import com.google.common.collect.Sets;
 
-import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
@@ -13,11 +12,11 @@ import java.util.Collection;
 public class FieldIndexedTable<E> extends AbstractIndexedTable<E> {
 
     public FieldIndexedTable(Class<E> clazz) {
-        super(ElementType.FIELD, clazz);
+        super(clazz);
     }
 
-    Collection<IndexDefinition> findIndexedDefinitions() {
-        final Collection<IndexDefinition> indexedFields = Sets.newHashSet();
+    Collection<IndexDefinition<E>> findIndexDefinitions() {
+        final Collection<IndexDefinition<E>> indexedFields = Sets.newHashSet();
 
         for (final Field field : clazz.getFields()) {
             if (field.getAnnotation(Indexed.class) != null) {

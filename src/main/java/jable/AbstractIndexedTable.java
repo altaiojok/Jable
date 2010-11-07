@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import java.lang.annotation.ElementType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,28 +13,28 @@ import java.util.Map;
  * @since 2010-11-06
  */
 abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
-    protected final Class<E> clazz;
-    private final Map<String, IndexDefinition> indexDefinitionsByName;
-    private final Map<IndexDefinition, Map<Object, Collection<E>>> indexes;
+    final Class<E> clazz;
+    private final Map<String, IndexDefinition<E>> indexDefinitionsByName;
+    private final Map<IndexDefinition<E>, Map<Object, Collection<E>>> indexes;
 
-    AbstractIndexedTable(ElementType indexType, Class<E> clazz) {
+    AbstractIndexedTable(Class<E> clazz) {
         this.clazz = clazz;
         this.indexes = Maps.newHashMap();
         this.indexDefinitionsByName = Maps.newHashMap();
 
-        for (IndexDefinition indexDef : findIndexedDefinitions()) {
+        for (IndexDefinition<E> indexDef : findIndexDefinitions()) {
             indexDefinitionsByName.put(indexDef.getName(), indexDef);
             indexes.put(indexDef, new HashMap<Object, Collection<E>>());
         }
     }
 
-    abstract Collection<IndexDefinition> findIndexedDefinitions();
+    abstract Collection<IndexDefinition<E>> findIndexDefinitions();
 
     public boolean add(E e) {
         boolean hasChanged = false;
 
-        for(Map.Entry<IndexDefinition, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
-            final IndexDefinition indexDef = indexEntry.getKey();
+        for(Map.Entry<IndexDefinition<E>, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
+            final IndexDefinition<E> indexDef = indexEntry.getKey();
             final Object indexableValue = indexDef.getIndexableValue(e);
 
             Collection<E> indexedElements = indexEntry.getValue().get(indexableValue);
