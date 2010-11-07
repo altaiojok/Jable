@@ -32,13 +32,12 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
     public boolean add(E e) {
         boolean hasChanged = false;
 
-        for(String indexBy : indexes.keySet()) {
-            final Map<Object, Collection<E>> index = indexes.get(indexBy);
-            final Object indexedValue = getIndexedValue(e, indexBy);
-            Collection<E> indexedMap = index.get(indexedValue);
+        for(Map.Entry<String, Map<Object, Collection<E>>> indexEntry : indexes.entrySet()) {
+            final Object indexedValue = getIndexedValue(e, indexEntry.getKey());
+            Collection<E> indexedMap = indexEntry.getValue().get(indexedValue);
             indexedMap = indexedMap != null ? indexedMap : new HashSet<E>();
             hasChanged |= indexedMap.add(e);
-            index.put(indexedValue, indexedMap);
+            indexEntry.getValue().put(indexedValue, indexedMap);
         }
 
         return hasChanged;
