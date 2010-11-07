@@ -22,13 +22,13 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
         this.indexes = Maps.newHashMap();
         this.indexDefinitionsByName = Maps.newHashMap();
 
-        for (IndexDefinition<E> indexDef : findIndexDefinitions()) {
+        for (IndexDefinition<E> indexDef : buildIndexDefinitions()) {
             indexDefinitionsByName.put(indexDef.getName(), indexDef);
             indexes.put(indexDef, new HashMap<Object, Collection<E>>());
         }
     }
 
-    abstract Collection<IndexDefinition<E>> findIndexDefinitions();
+    abstract Collection<IndexDefinition<E>> buildIndexDefinitions();
 
     public boolean add(E e) {
         boolean hasChanged = false;
@@ -69,12 +69,10 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
     }
 
     public Collection<String> getIndexNames() {
-        Collection<String> indexNames = Sets.newHashSet();
+        return indexDefinitionsByName.keySet();
+    }
 
-        for (IndexDefinition indexDef : indexes.keySet()) {
-            indexNames.add(indexDef.getName());
-        }
-
-        return indexNames;
+    public Collection<IndexDefinition<E>> getIndexDefinitions() {
+        return indexes.keySet();
     }
 }

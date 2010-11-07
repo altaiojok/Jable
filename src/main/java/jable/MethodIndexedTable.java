@@ -16,7 +16,7 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
         super(clazz);
     }
 
-    Collection<IndexDefinition<E>> findIndexDefinitions() {
+    Collection<IndexDefinition<E>> buildIndexDefinitions() {
         final Collection<IndexDefinition<E>> indexedMethods = Sets.newHashSet();
 
         for (final Method method : clazz.getMethods()) {

@@ -15,7 +15,7 @@ public class FieldIndexedTable<E> extends AbstractIndexedTable<E> {
         super(clazz);
     }
 
-    Collection<IndexDefinition<E>> findIndexDefinitions() {
+    Collection<IndexDefinition<E>> buildIndexDefinitions() {
         final Collection<IndexDefinition<E>> indexedFields = Sets.newHashSet();
 
         for (final Field field : clazz.getFields()) {

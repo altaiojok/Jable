@@ -17,4 +17,6 @@ public interface IndexedTable<E> {
     Collection<E> getByIndex(String indexName, Object value);
 
     Collection<String> getIndexNames();
+
+    Collection<IndexDefinition<E>> getIndexDefinitions();
 }
