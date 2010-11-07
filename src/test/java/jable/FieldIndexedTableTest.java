@@ -2,7 +2,6 @@ package jable;
 
 import com.google.common.collect.Sets;
 import com.google.inject.internal.Preconditions;
-import junit.framework.TestCase;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -10,14 +9,7 @@ import org.testng.annotations.Test;
  * @author Ryan Brainard
  * @since 2010-11-03
  */
-public class FieldIndexedTableTest extends TestCase {
-
-    private IndexedTable<Person> personTable;
-
-    private static final Person JS = new Person("Smith", "Joanna", 28, 1);
-    private static final Person AS = new Person("Smith", "Angela", 31, 2);
-    private static final Person MB = new Person("Black", "Mary",   31, 3);
-    private static final Person ML = new Person("Lee",   "Mary",   31, 3); // same SSN as MB
+public class FieldIndexedTableTest extends IndexedTableBaseTest {
 
     @Override
     @BeforeTest
@@ -25,6 +17,7 @@ public class FieldIndexedTableTest extends TestCase {
         super.setUp();
         personTable = new FieldIndexedTable<Person>(Person.class);
     }
+
 
     @Test
     public void testIndexAnnotation() throws Exception {

@@ -1,22 +1,20 @@
 package jable;
 
 import com.google.common.collect.Sets;
-import junit.framework.TestCase;
+import com.google.inject.internal.Preconditions;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
  * @author Ryan Brainard
  * @since 2010-11-03
  */
-public class MethodIndexedTableTest extends TestCase {
+public class MethodIndexedTableTest extends IndexedTableBaseTest {
 
-    final IndexedTable<Person> personTable;
-
-    final Person JS = new Person("Smith", "Joanna", 28, 1);
-    final Person AB = new Person("Smith", "Angela", 31, 2);
-    final Person MB = new Person("Black", "Mary",   31, 3);
-
-    public MethodIndexedTableTest() throws Exception {
+    @Override
+    @BeforeTest
+    protected void setUp() throws Exception {
+        super.setUp();
         personTable = new MethodIndexedTable<Person>(Person.class);
     }
 
@@ -29,39 +27,39 @@ public class MethodIndexedTableTest extends TestCase {
 
     @Test
     public void testGettingCollections() throws Exception {
-        personTable.add(AB);
+        personTable.add(AS);
         personTable.add(JS);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("getLastName", JS.getLastName()));
-        assertEquals(Sets.newHashSet(JS, AB), personTable.getByIndex("getLastName", AB.getLastName()));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex("getLastName", JS.getLastName()));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex("getLastName", AS.getLastName()));
         assertEquals(Sets.newHashSet(MB),     personTable.getByIndex("getLastName", MB.getLastName()));
 
         assertEquals(Sets.newHashSet(JS),     personTable.getByIndex("getAge", JS.getAge()));
-        assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("getAge", AB.getAge()));
-        assertEquals(Sets.newHashSet(MB, AB), personTable.getByIndex("getAge", MB.getAge()));
+        assertEquals(Sets.newHashSet(MB, AS), personTable.getByIndex("getAge", AS.getAge()));
+        assertEquals(Sets.newHashSet(MB, AS), personTable.getByIndex("getAge", MB.getAge()));
     }
 
     @Test
     public void testAdd() throws Exception {
         assertTrue(personTable.add(JS));
-        assertTrue(personTable.add(AB));
-        assertFalse(personTable.add(AB));
+        assertTrue(personTable.add(AS));
+        assertFalse(personTable.add(AS));
     }
 
     @Test
     public void testAddAll() throws Exception {
-        assertTrue(personTable.addAll(Sets.newHashSet(AB, JS, MB)));
-        assertFalse(personTable.addAll(Sets.newHashSet(AB, JS, MB)));
+        assertTrue(personTable.addAll(Sets.newHashSet(AS, JS, MB)));
+        assertFalse(personTable.addAll(Sets.newHashSet(AS, JS, MB)));
     }
 
     @Test
     public void testGettingCollectionsForNonExistentColumn() throws Exception {
         try {
-            personTable.getByIndex("birthday", "");
+            personTable.getByIndex("getBirthday", "");
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("No index found for birthday. Be sure to annotate method as @Indexed.", npe.getMessage());
+            assertEquals("No index found for getBirthday. Be sure to annotate method as @Indexed.", npe.getMessage());
         }
     }
 
@@ -72,6 +70,28 @@ public class MethodIndexedTableTest extends TestCase {
             fail();
         } catch (NullPointerException npe) {
             assertEquals("No index found for getFirstName. Be sure to annotate method as @Indexed.", npe.getMessage());
+        }
+    }
+
+    @Test
+    public void testAddDuplicate() throws Exception {
+        personTable.add(MB);
+        personTable.add(MB);
+
+        assertEquals(Sets.newHashSet(MB), personTable.getByIndex("getLastName", MB.lastName));
+    }
+
+    @Test
+    public void testAddDifferentRecordWithDuplicateOnUniqueIndex() throws Exception {
+        Preconditions.checkState(MB.ssn.equals(ML.ssn));
+
+        personTable.add(MB);
+
+        try {
+            personTable.add(ML);
+            fail();
+        } catch (UniqueConstraintViolation ucv) {
+            assertEquals("Record already exists with getSsn as " + MB.ssn, ucv.getMessage());
         }
     }
 }
