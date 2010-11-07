@@ -1,6 +1,7 @@
 package jable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -71,7 +72,13 @@ public class FieldIndexedTable<E> implements IndexedTable<E> {
                 "No index found for " + fieldIndex.getName() + ". Be sure to annotate field as @Indexed.").get(value);
     }
 
-    Map<Field, Map<Object, Collection<E>>> getIndexes() {
-        return indexes;
+    public Collection<String> getIndexNames() {
+        Collection<String> indexNames = Sets.newHashSet();
+
+        for (Field field : indexes.keySet()) {
+            indexNames.add(field.getName());
+        }
+
+        return indexNames;
     }
 }

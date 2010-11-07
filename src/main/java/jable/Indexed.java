@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @author Ryan Brainard
  * @since 2010-11-03
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Indexed {
 }

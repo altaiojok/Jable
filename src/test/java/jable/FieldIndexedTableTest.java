@@ -25,15 +25,9 @@ public class FieldIndexedTableTest extends TestCase {
 
     @Test
     public void testIndexAnnotation() throws Exception {
-        Set<String> fieldIndexes = Sets.newHashSet();
-
-        for(Field f : new FieldIndexedTable<Person>(Person.class).getIndexes().keySet()) {
-            fieldIndexes.add(f.getName());
-        }
-
-        assertTrue(fieldIndexes.contains("lastName"));
-        assertFalse(fieldIndexes.contains("firstName"));
-        assertTrue(fieldIndexes.contains("age"));
+        assertTrue(personTable.getIndexNames().contains("lastName"));
+        assertFalse(personTable.getIndexNames().contains("firstName"));
+        assertTrue(personTable.getIndexNames().contains("age"));
     }
 
     @Test
