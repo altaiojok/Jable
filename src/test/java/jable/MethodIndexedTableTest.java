@@ -15,16 +15,14 @@ public class MethodIndexedTableTest extends IndexedTableBaseTest {
         personTable = new MethodIndexedTable<Person>(Person.class);
     }
 
-    public void testIndexAnnotation() throws Exception {
-        assertTrue(personTable.getIndexNames().contains("getLastName"));
-        assertFalse(personTable.getIndexNames().contains("getFirstName"));
-        assertTrue(personTable.getIndexNames().contains("getAge"));
+    public void testMethodIndexedAnnotation() throws Exception {
+        assertTrue(personTable.getIndexNames().contains("getFullName"));
+        assertFalse(personTable.getIndexNames().contains("getLastName"));
     }
 
     public void testGetByAnnotatedMethodIndexName() throws Exception {
         personTable.add(JS);
-        personTable.add(AS);
 
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy("getLastName", JS.getLastName()));
+        assertEquals(Sets.newHashSet(JS), personTable.getByIndex("getFullName", JS.getFullName()));
     }
 }

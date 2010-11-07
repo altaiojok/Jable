@@ -85,9 +85,9 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(JS);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(JS)));
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(AS)));
-        assertEquals(Sets.newHashSet(MB),     personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(JS)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(AS)));
+        assertEquals(Sets.newHashSet(MB),     personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
 
@@ -96,16 +96,16 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(JS);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(JS)));
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(AS)));
-        assertEquals(Sets.newHashSet(MB),     personTable.getBy(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(JS)));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(AS)));
+        assertEquals(Sets.newHashSet(MB),     personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
     public void testGetByIndexNameForMissingIndex() throws Exception {
         final String missingIndex = "NotHere";
 
         try {
-            personTable.getBy(missingIndex, "");
+            personTable.getByIndex(missingIndex, "");
             fail();
         } catch (NullPointerException npe) {
             assertEquals("No index found for " + missingIndex + ".", npe.getMessage());
@@ -116,7 +116,7 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(MB);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(MB), personTable.getBy(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(MB), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
     public void testAddDifferentRecordWithDuplicateOnUniqueIndex() throws Exception {

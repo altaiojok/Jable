@@ -14,9 +14,9 @@ public interface IndexedTable<E> {
 
     boolean addAll(Collection<? extends E> c);
 
-    Collection<E> getBy(String indexName, Object whereValueIs);
+    Collection<E> getByIndex(String indexName, Object whereValueIs);
 
-    Collection<E> getBy(IndexDefinition indexDef, Object whereValueIs);
+    Collection<E> getByIndex(IndexDefinition indexDef, Object whereValueIs);
 
     Collection<String> getIndexNames();
 

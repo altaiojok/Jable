@@ -14,7 +14,7 @@ public class FieldIndexedTableTest extends IndexedTableBaseTest {
         personTable = new FieldIndexedTable<Person>(Person.class);
     }
 
-    public void testIndexAnnotation() throws Exception {
+    public void testFieldIndexedAnnotation() throws Exception {
         assertTrue(personTable.getIndexNames().contains("lastName"));
         assertFalse(personTable.getIndexNames().contains("firstName"));
         assertTrue(personTable.getIndexNames().contains("age"));
@@ -24,6 +24,6 @@ public class FieldIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(JS);
         personTable.add(AS);
 
-        assertEquals(Sets.newHashSet(JS, AS), personTable.getBy("lastName", JS.lastName));
+        assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex("lastName", JS.lastName));
     }
 }

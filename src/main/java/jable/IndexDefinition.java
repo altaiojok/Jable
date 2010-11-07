@@ -35,9 +35,7 @@ public abstract class IndexDefinition<E> {
 
         IndexDefinition that = (IndexDefinition) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-
-        return true;
+        return !(name != null ? !name.equals(that.name) : that.name != null);
     }
 
     @Override
