@@ -20,8 +20,13 @@ public abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
         this.indexType = indexType;
         this.clazz = clazz;
         this.indexes = new HashMap<String, Map<Object, Collection<E>>>();
+
+        for (String indexName : findIndexedMembers()) {
+            indexes.put(indexName, new HashMap<Object, Collection<E>>());
+        }
     }
 
+    abstract Collection<String> findIndexedMembers();
 
     public boolean addAll(Collection<? extends E> c) {
         boolean hasChanged = false;

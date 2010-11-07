@@ -1,10 +1,11 @@
 package jable;
 
+import com.google.common.collect.Sets;
+
 import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -16,6 +17,10 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
 
     public MethodIndexedTable(Class<E> clazz) {
         super(ElementType.METHOD, clazz);
+    }
+
+    Collection<String> findIndexedMembers() {
+        final Collection<String> indexedMethods = Sets.newHashSet();
 
         for (Method method : clazz.getMethods()) {
             if (method.getAnnotation(Indexed.class) != null) {
@@ -27,9 +32,11 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
                     throw new IllegalArgumentException("Methods without return values cannot be indexed");
                 }
 
-                indexes.put(method.getName(), new HashMap<Object, Collection<E>>());
+                indexedMethods.add(method.getName());
             }
         }
+
+        return indexedMethods;
     }
 
     public boolean add(E e) {
