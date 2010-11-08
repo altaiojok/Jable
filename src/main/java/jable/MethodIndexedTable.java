@@ -25,7 +25,7 @@ public class MethodIndexedTable<E> extends AbstractIndexedTable<E> {
                     throw new IllegalArgumentException("Methods with parameters cannot be indexed.");
                 }
 
-                if (method.getReturnType() == null) {
+                if (method.getReturnType().getName().equals("void")) {
                     throw new IllegalArgumentException("Methods without return values cannot be indexed");
                 }
 

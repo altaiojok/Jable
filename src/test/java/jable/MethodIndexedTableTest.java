@@ -25,4 +25,22 @@ public class MethodIndexedTableTest extends IndexedTableBaseTest {
 
         assertEquals(Sets.newHashSet(JS), personTable.getByIndex("getFullName", JS.getFullName()));
     }
+
+    public void testMethodIndexedTableInitializationWithMethodWithArguments() throws Exception {
+        try {
+            new MethodIndexedTable<ArgPerson>(ArgPerson.class);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            assertEquals("Methods with parameters cannot be indexed.", ex.getMessage());
+        }
+    }
+
+    public void testMethodIndexedTableInitializationWithVoidMethod() throws Exception {
+        try {
+            new MethodIndexedTable<VoidPerson>(VoidPerson.class);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            assertEquals("Methods without return values cannot be indexed", ex.getMessage());
+        }
+    }
 }
