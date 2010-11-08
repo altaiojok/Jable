@@ -23,6 +23,7 @@ public class FieldIndexedTableTest extends IndexedTableBaseTest {
     public void testGetByAnnotatedFieldIndexName() throws Exception {
         personTable.add(JS);
         personTable.add(AS);
+        personTable.add(MB);
 
         assertEquals(Sets.newHashSet(JS, AS), personTable.getByIndex("lastName", JS.lastName));
     }

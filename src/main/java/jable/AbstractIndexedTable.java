@@ -44,9 +44,7 @@ abstract class AbstractIndexedTable<E> implements IndexedTable<E> {
             Collection<E> indexedElements = indexEntry.getValue().get(indexableValue);
             if (indexedElements == null) {
                 indexedElements = Sets.newHashSet();
-            } else if (indexDef.isUnique()
-                       && !indexedElements.contains(e)
-                       && indexEntry.getValue().containsKey(indexableValue)) {
+            } else if (indexDef.isUnique() && !indexedElements.contains(e)) {
                 throw new UniqueConstraintViolation(indexDef.getName(), indexableValue.toString());
             }
 

@@ -116,11 +116,12 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         personTable.add(MB);
         personTable.add(MB);
 
-        assertEquals(Sets.newHashSet(MB), personTable.getByIndex(NON_UNIQUE_INDEX.getName(), NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(MB), personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(MB)));
     }
 
     public void testAddDifferentRecordWithDuplicateOnUniqueIndex() throws Exception {
-        Preconditions.checkState(UNIQUE_INDEX.getIndexableValue(MB).equals(UNIQUE_INDEX.getIndexableValue(ML)));
+        Preconditions.checkArgument(!MB.equals(ML));
+        Preconditions.checkArgument(UNIQUE_INDEX.getIndexableValue(MB).equals(UNIQUE_INDEX.getIndexableValue(ML)));
         personTable.add(MB);
 
         try {
@@ -129,5 +130,16 @@ public class AbstractIndexedTableTest extends IndexedTableBaseTest {
         } catch (UniqueConstraintViolation ucv) {
             assertEquals("Record already exists with " + UNIQUE_INDEX.getName() + " as " + UNIQUE_INDEX.getIndexableValue(MB), ucv.getMessage());
         }
+    }
+
+    public void testAddDifferentRecordWithNonDuplicateOnUniqueIndex() throws Exception {
+        Preconditions.checkArgument(!MB.equals(AS));
+        Preconditions.checkArgument(!UNIQUE_INDEX.getIndexableValue(MB).equals(UNIQUE_INDEX.getIndexableValue(AS)));
+
+        personTable.add(MB);
+        personTable.add(AS);
+
+        assertEquals(Sets.newHashSet(MB), personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(MB)));
+        assertEquals(Sets.newHashSet(AS), personTable.getByIndex(NON_UNIQUE_INDEX, NON_UNIQUE_INDEX.getIndexableValue(AS)));
     }
 }
